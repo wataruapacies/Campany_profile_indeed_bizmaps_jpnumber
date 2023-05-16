@@ -10,6 +10,8 @@ import urllib.parse
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from difflib import SequenceMatcher
+import os
+import glob
 
 
 def list_check(list, number):
@@ -148,10 +150,32 @@ if indeed_judge:
         driver.get(next_page_text)
         
     driver.close()
+    
 
     print(len(name))
+    csv_file_name_a = box_search_where + '_' + box_search_what + '_' + 'result' + '.csv'
+    file = open(csv_file_name_a, 'w', encoding='utf-8_sig') 
+    write = csv.writer(file)
+    try:
+        write.writerow(name)
+    except:
+        print('last writing error!!')
 else:
-    file_name = 'result.csv'
+    cwd = os.getcwd()
+    path_list=glob.glob(cwd + '\*')
+    name_list=[]
+    for i in path_list:
+        file = os.path.basename(i)          # ファイル名(拡張子あり)を取得
+        #name, ext = os.path.splitext(file)  # 拡張子なしファイル名と拡張子を取得
+        name_list.append(file)              # 拡張子なしファイル名をリスト化
+    print(name_list)
+    
+    
+    for k in range(len(name_list)):
+        if 'result.csv' in name_list[k]:
+            file_name = name_list[k]
+    
+    #file_name = 'result.csv'
     with open(file_name,'r',encoding='utf-8_sig') as f:
         reader = csv.reader(f)
         for line in reader:
@@ -170,19 +194,19 @@ else:
 
 csv_file_name = box_search_where + '_' + box_search_what + '.csv'
 
-cols = ['indeed_会社名','業種','bizmaps_会社名','郵便番号','住所','URL','URLから取得した電話番号','jpnumber_会社名','jpnumber_住所','jpnumber_電話番号']
+cols = ['indeed_会社名','業種','会社名','郵便番号','住所','URL','電話番号','bizmapsなら1 junumberなら2']
 df = pandas.DataFrame(index=[], columns=cols)
 driver = webdriver.Chrome(options=options)
-driver.implicitly_wait(3)
+driver.implicitly_wait(2)
 driver.maximize_window()
 
 #wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
 text_company = ['/company/','/about/','/company/outline']
 
 for i in range(len(name)):
-    #if i < 700:
-    #    print(name[i])
-    #    continue
+    if i == 0:
+        print(name[i])
+        continue
     biz_name_exist = False
     biz_address_exist = False
     url_exist = False
@@ -201,10 +225,10 @@ for i in range(len(name)):
         search_bar_biz.send_keys(name[i])
         print(i)
         print(name[i])
-        sleep(1)
+        #sleep(1)
         white = driver.find_element_by_class_name("fa-caret-square-down")
         white.click()
-        sleep(5)
+        sleep(2)
         element = driver.find_element_by_class_name("TopSearchBtn")
         search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
         if search_num.text == "":
@@ -224,9 +248,81 @@ for i in range(len(name)):
             biz_click = False
         search_num_text = search_num.text
         print(search_num_text)
-        if len(search_num_text)>4 or search_num.text == '0':
-            print("big_data or 0 !! biz_data impossible!!")
+        if search_num.text == '0':
+            print("biZ_data = 0 !! biz_data impossible!!")
             biz_click = False
+        if len(search_num_text)>1:
+            print("big_data more imformation input!!!!")
+            biz_area = driver.find_element_by_class_name("top_city")
+            biz_area.click()
+            sleep(1)
+            biz_area_click1 = driver.find_element_by_class_name("modal__item_parent")
+            biz_area_click1.click()
+            sleep(1)
+            biz_area_click2 = driver.find_element_by_class_name("modal__item_child")
+            biz_area_click2.click()
+            sleep(1)
+            biz_area_click3 = driver.find_element(By.CLASS_NAME,"modal_footer.modal_decide_Btn")
+            biz_area_click3.click()
+            sleep(2)
+            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            if search_num.text == "":
+                print("not_yet.... wait 5 seconds...")
+                sleep(5)
+            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            if search_num.text == "":
+                print("not_yet.... wait 10 seconds...")
+                sleep(10)
+            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            if search_num.text == "":
+                print("not_yet.... wait 25 seconds...")
+                sleep(25)
+            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            if search_num.text == "":
+                print("not_yet.... biz_data impossible!!")
+                biz_click = False
+            search_num_text = search_num.text
+            print(search_num_text)
+            if search_num.text == '0':
+                print("biZ_data = 0 !! biz_data impossible!! ---------->sorry....")
+                #biz_click = False
+                driver.get('https://biz-maps.com/')
+                sleep(3)
+                #search_bar_biz = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "top_s")))
+                #search_bar_biz.send_keys(name[i])
+                search_bar_biz = driver.find_element_by_id("top_s")
+                search_bar_biz.send_keys(name[i])
+                print(i)
+                print(name[i])
+                #sleep(1)
+                white = driver.find_element_by_class_name("fa-caret-square-down")
+                white.click()
+                sleep(2)
+                element = driver.find_element_by_class_name("TopSearchBtn")
+                search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+                if search_num.text == "":
+                    print("not_yet.... wait 5 seconds...")
+                    sleep(5)
+                search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+                if search_num.text == "":
+                    print("not_yet.... wait 10 seconds...")
+                    sleep(10)
+                search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+                if search_num.text == "":
+                    print("not_yet.... wait 25 seconds...")
+                    sleep(25)
+                search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+                if search_num.text == "":
+                    print("not_yet.... biz_data impossible!!")
+                    biz_click = False
+                search_num_text = search_num.text
+                print(search_num_text)
+        if len(search_num_text)>4:
+            biz_click = False
+            print("big_data more biz_click-->False...")
+        
+        #最初の情報入力処理終了
+            
         if biz_click:
             try:
                 print("click_before")
@@ -235,11 +331,25 @@ for i in range(len(name)):
             except:
                 print('i cant click')
                 element.click()
-            sleep(3)
+            sleep(2)
             try:
                 search_results = driver.find_elements(By.CLASS_NAME,"results__headArea")
                 #sleep(1)
-                search_results[0].click()
+                biz_index_num = 0
+                for biz_index in range(len(search_results)):
+                    try:
+                        xpath = "//div/div[3]/div[2]/ul/li[" + str(biz_index+1) + "]/div[1]/table[1]/tbody/tr[2]/td"
+                        address = driver.find_element(by=By.XPATH, value=xpath)
+                        print('yeahllllll')
+                        print(address.text)
+                        if box_search_where in address.text:
+                            biz_index_num = biz_index
+                            print('target catched!!!')
+                            break
+                    except:
+                        print('terget NON')
+                search_results[biz_index_num].click()
+                #住所が東京なのをクリック なければ一番上の
                 biz_name = driver.find_element(By.CLASS_NAME,"company__name")
                 print(biz_name.text)
                 row = list_check(row,2)
@@ -255,20 +365,31 @@ for i in range(len(name)):
                 address_list = address.text.splitlines()
                 try:
                     post_code = address_list[0]
-                    post_code = post_code.lstrip('〒 ')
-                    print(post_code)
-                    row = list_check(row,3)
-                    row.append(post_code)
+                    if post_code.startswith('〒'):
+                        post_code = post_code.lstrip('〒 ')
+                        print(post_code)
+                        row = list_check(row,3)
+                        row.append(post_code)
+                    else:
+                        row = list_check(row,3)
+                        print('cant Get postcode')
+                        row.append('')
                 except:
                     row = list_check(row,3)
                     row.append("")
                     print("cant_read_post_code")
                     biz_exist = False
                 try:
-                    print(address_list[1])
-                    row = list_check(row,4)
-                    row.append(address_list[1])
-                    biz_address_exist = True
+                    if address_list[0].startswith('〒'):
+                        print(address_list[1])
+                        row = list_check(row,4)
+                        row.append(address_list[1])
+                        biz_address_exist = True
+                    else:
+                        print('Address Is This ????')
+                        print(address_list[0])
+                        row = list_check(row,4)
+                        row.append(address_list[0])
                 except:
                     row = list_check(row,4)
                     row.append("")
