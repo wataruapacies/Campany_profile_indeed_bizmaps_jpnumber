@@ -70,17 +70,215 @@ def phone_number(string):
     return answer
 '''
 
-def phone_number_new(string):
+def phone_number_new(string,answer):
     number_10 = ['0','1','2','3','4','5','6','7','8','9']
     exist = 0
     count = 0
     count_hyphen = 0
     phone_number_count = 12
-    answer = 'False'
-    escape = False
+    #answer = ['']
     for i in range(len(string)):
         if i < 15:
             continue
+        elif string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10:#末尾****
+            if string[i-4] == '-':#末尾-****
+                if string[i-5] in number_10 and string[i-6] in number_10:#末尾**-****
+                    if string[i-7] in number_10 and string[i-8] in number_10:#末尾****-****
+                        if string[i-9] == '-':#末尾-****-****
+                            if string[i-10] in number_10 and string[i-11] =='0':#0*-****-****
+                                digits = 11
+                                answer[0] = string[i-digits]
+                                for k in range(digits):
+                                    answer[0] = answer[0] + string[i-(digits-1-k)]
+                                if answer[0].startswith('00'):
+                                    answer[0] = ''
+                                else:
+                                    break
+                            elif string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0':#0**-****-****
+                                digits = 12
+                                answer[0] = string[i-digits]
+                                for k in range(digits):
+                                    answer[0] = answer[0] + string[i-(digits-1-k)]
+                                if answer[0].startswith('000'):
+                                    answer[0] = ''
+                                else:
+                                    break
+                        elif string[i-9] ==')':#末尾)****-****
+                            if string[i-10] in number_10 and string[i-11] == '0' and string[i-12] == '(':#(0*)****-****
+                                digits = 12
+                                answer[0] = string[i-digits]
+                                for k in range(digits):
+                                    answer[0] = answer[0] + string[i-(digits-1-k)]
+                                if answer[0].startswith('(00)'):
+                                    answer[0] = ''
+                                else:
+                                    break
+                            elif string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0' and string[i-13] == '(':#(0**)****-****
+                                digits = 13
+                                answer[0] = string[i-digits]
+                                for k in range(digits):
+                                    answer[0] = answer[0] + string[i-(digits-1-k)]
+                                if answer[0].startswith('(000)'):
+                                    answer[0] = ''
+                                else:
+                                    break
+                    elif string[i-7] in number_10:#末尾***-****
+                        if string[i-8] == '-' and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] == '0':#0**-***-****
+                            digits = 11
+                            answer[0] = string[i-digits]
+                            for k in range(digits):
+                                answer[0] = answer[0] + string[i-(digits-1-k)]
+                            if answer[0].startswith('000'):
+                                answer[0] = ''
+                            else:
+                                break
+                        elif string[i-8] == ')' and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] == '0' and string[i-12] == '(':#(0**)***-****
+                            digits = 12
+                            answer[0] = string[i-digits]
+                            for k in range(digits):
+                                answer[0] = answer[0] + string[i-(digits-1-k)]
+                            if answer[0].startswith('(000)'):
+                                answer[0] = ''
+                            else:
+                                break
+                    elif string[i-7] == '-' and string[i-8] in number_10 and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] =='0':#0***-**-****
+                        digits = 11
+                        answer[0] = string[i-digits]
+                        for k in range(digits):
+                            answer[0] = answer[0] + string[i-(digits-1-k)]
+                        if answer[0].startswith('0120'):
+                            answer.append(answer[0])
+                            answer[0] = ''
+                            print('free dial')
+                            print(answer[1])
+                        if answer[0].startswith('0000'):
+                            answer[0] = ''
+                        else:
+                            break
+                    elif string[i-7] == '(' and string[i-8] in number_10 and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] =='0' and string[i-12] == ')':#(0***)**-****
+                        digits = 12
+                        answer[0] = string[i-digits]
+                        for k in range(digits):
+                            answer[0] = answer[0] + string[i-(digits-1-k)]
+                        if answer[0].startswith('(0120)'):
+                            answer.append(answer[0])
+                            answer[0] = ''
+                            print('free dial')
+                            print(answer[1])
+                        if answer[0].startswith('(0000)'):
+                            answer[0] = ''
+                        else:
+                            break
+            elif string[i-4] == ')':#末尾)****
+                if string[i-5] in number_10 and string[i-6] in number_10:#末尾**)****
+                    if string[i-7] =='(' and string[i-8] in number_10 and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] == '0':#0***(**)****
+                        digits = 11
+                        answer[0] = string[i-digits]
+                        for k in range(digits):
+                            answer[0] = answer[0] + string[i-(digits-1-k)]
+                        if answer[0].startswith('0120'):
+                            answer.append(answer[0])
+                            answer[0] = ''
+                            print('free dial')
+                            print(answer[1])
+                        if answer[0].startswith('0000'):
+                            answer[0] = ''
+                        else:
+                            break
+                    elif string[i-7] in number_10 and string[i-8] =='(' and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] == '0':#0**(***)****
+                        digits = 11
+                        answer[0] = string[i-digits]
+                        for k in range(digits):
+                            answer[0] = answer[0] + string[i-(digits-1-k)]
+                        if answer[0].startswith('000'):
+                            answer[0] = ''
+                        else:
+                            break
+                    elif string[i-7] in number_10 and string[i-8] in number_10 and string[i-9] =='(' and string[i-10] in number_10 and string[i-11] == '0':#0*(****)****
+                        digits = 11
+                        answer[0] = string[i-digits]
+                        for k in range(digits):
+                            answer[0] = answer[0] + string[i-(digits-1-k)]
+                        if answer[0].startswith('00'):
+                            answer[0] = ''
+                        else:
+                            break
+                    elif string[i-7] in number_10 and string[i-8] in number_10 and string[i-9] =='(' and string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0':#0**(****)****
+                        digits = 12
+                        answer[0] = string[i-digits]
+                        for k in range(digits):
+                            answer[0] = answer[0] + string[i-(digits-1-k)]
+                        if answer[0].startswith('000'):
+                            answer[0] = ''
+                        else:
+                            break
+            elif string[i-4] in number_10 and string[i-5] in number_10:#末尾******
+                if string[i-6] == ')' and string[i-7] in number_10 and string[i-8] in number_10 and string[i-9] in number_10 and string[i-10] == '0' and string[i-11] == '(':#(0***)******
+                    digits = 11
+                    answer[0] = string[i-digits]
+                    for k in range(digits):
+                        answer[0] = answer[0] + string[i-(digits-1-k)]
+                    if answer[0].startswith('(0120)'):
+                        answer.append(answer[0])
+                        print('free dial')
+                        print(answer[1])
+                        answer[0] = ''
+                    if answer[0].startswith('(0000)'):
+                        answer[0] = ''
+                    else:
+                        break
+                elif string[i-6] in number_10 and string[i-7] == ')' and string[i-8] in number_10 and string[i-9] in number_10 and string[i-10] == '0' and string[i-11] == '(':#(0**)*******
+                    digits = 11
+                    answer[0] = string[i-digits]
+                    for k in range(digits):
+                        answer[0] = answer[0] + string[i-(digits-1-k)]
+                    if answer[0].startswith('(000)'):
+                        answer[0] = ''
+                    else:
+                        break
+                elif string[i-6] in number_10 and string[i-7] in number_10 and string[i-8] == ')' and string[i-9] in number_10 and string[i-10] == '0' and string[i-11] == '(':#(0*)********
+                    digits = 11
+                    answer[0] = string[i-digits]
+                    for k in range(digits):
+                        answer[0] = answer[0] + string[i-(digits-1-k)]
+                    if answer[0].startswith('(00)'):
+                        answer[0] = ''
+                    else:
+                        break
+                elif string[i-6] in number_10 and string[i-7] in number_10 and string[i-8] == ')' and string[i-9] in number_10 and string[i-10] in number_10 and string[i-11] == '0' and string[i-12] == '(':#(0**)********
+                    digits = 12
+                    answer[0] = string[i-digits]
+                    for k in range(digits):
+                        answer[0] = answer[0] + string[i-(digits-1-k)]
+                    if answer[0].startswith('(000)'):
+                        answer[0] = ''
+                    else:
+                        break
+    return answer
+'''
+        if i != len(string)-1:#ハイフン無し電話番号抽出
+            if string[i+1] not in number_10 and string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10 and string[i-4] in number_10 and string[i-5] in number_10 and string[i-6] in number_10 and string[i-7] in number_10 and string[i-8] in number_10 and string[i-9] in number_10:
+                if string[i-10] in number_10 and string[i-11] not in number_10:
+                    digits = 10
+                    answer[0] = string[i-digits]
+                    for k in range(digits):
+                        answer[0] = answer[0] + string[i-(digits-1-k)]
+                    if answer[0].startswith('000'):
+                        answer[0] = ''
+                    else:
+                        break
+                elif string[i-10] not in number_10:
+                    digits = 9
+                    answer[0] = string[i-digits]
+                    for k in range(digits):
+                        answer[0] = answer[0] + string[i-(digits-1-k)]
+                    if answer[0].startswith('000'):
+                        answer[0] = ''
+                    else:
+                        break
+'''
+        
+'''
         if string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10 and string[i-4]=='-' and string[i-5] in number_10 and string[i-6] in number_10:
             if string[i-7] ==')' and string[i-10] =='(':
                 if string[i-9] =='0' and string[i-8] in number_10:
@@ -138,7 +336,8 @@ def phone_number_new(string):
                         answer = 'False'
                     if answer != 'False':
                         break
-    return answer
+        '''
+
 options = webdriver.ChromeOptions()
 
 user_agent = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',\
@@ -505,41 +704,41 @@ for i in range(len(name)):
                 driver.get(url_text)
                 sleep(3)
                 page_text = driver.page_source
-                page_result = 'False'
-                page_result = phone_number_new(page_text)
-                print(page_text[10])
-                #URLのルートページ
-                ok = True
-                url_change = False
-                if url_text.startswith("http://"):
-                    url_text = url_text.lstrip("http://")
-                    ok = False
-                if url_text.startswith("https://"):
-                    url_text = url_text.lstrip("https://")
+                page_result = ['','']
+                page_result = phone_number_new(page_text,page_result)
+                if page_result[0] == '':
+                    print(page_text[10])
+                    #URLのルートページ
                     ok = True
-                #print(url_text)
-                for url_text_index in range(len(url_text)):
-                    if url_text[url_text_index] =='/':
-                        print("slash ------> True in URL")
-                        url_change = True
-                        break
-                try:
-                    url_text = url_text[:url_text_index]
-                except:
-                    print('URL change error')
-                #print(url_text)
-                if ok:
-                    url_text = 'https://' + url_text
-                else:
-                    url_text = 'http://' + url_text
-                print(url_text)
-                if url_change:
-                    driver.get(url_text)
-                    sleep(3)
-                    page_text = driver.page_source
-                    page_result = 'False'
-                    page_result = phone_number_new(page_text)
-                if page_result == 'False':
+                    url_change = False
+                    if url_text.startswith("http://"):
+                        url_text = url_text.lstrip("http://")
+                        ok = False
+                    if url_text.startswith("https://"):
+                        url_text = url_text.lstrip("https://")
+                        ok = True
+                    #print(url_text)
+                    for url_text_index in range(len(url_text)):
+                        if url_text[url_text_index] =='/':
+                            print("slash ------> True in URL")
+                            url_change = True
+                            break
+                    try:
+                        url_text = url_text[:url_text_index]
+                    except:
+                        print('URL change error')
+                    #print(url_text)
+                    if ok:
+                        url_text = 'https://' + url_text
+                    else:
+                        url_text = 'http://' + url_text
+                    print(url_text)
+                    if url_change:
+                        driver.get(url_text)
+                        sleep(3)
+                        page_text = driver.page_source
+                        page_result = phone_number_new(page_text,page_result)
+                if page_result[0] == '':
                     jj = 0
                     while True:
                         try:
@@ -551,8 +750,8 @@ for i in range(len(name)):
                             driver.get(company_link_next)
                             sleep(3)
                             page_text = driver.page_source
-                            page_result = phone_number_new(page_text)
-                            if page_result != 'False':
+                            page_result = phone_number_new(page_text,page_result)
+                            if page_result[0] != '':
                                 print('break because phone_number capture!! from URL')
                                 break
                         except:
@@ -561,11 +760,13 @@ for i in range(len(name)):
                         if jj == len(text_company):
                             break
                 row = list_check(row,6)
-                if page_result == 'False':
-                    page_result = ''
-                row.append(page_result)
+                if page_result[0] == '':
+                    print('phone_numebr non......')
+                row.append(page_result[0])
+                row.append(page_result[1])#フリーダイヤル追加
                 if page_result != '':
                     print('phone_exist_continue!!')
+                    #------------------------------ここまで
                 else:
                     #URLから取れなかった場合
                     row = list_check(row,7)
