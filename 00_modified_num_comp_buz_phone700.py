@@ -28,7 +28,7 @@ def list_check(list, number):
             for i in range(len(compare)-len(list)):
                 list.append("")
     return list
-
+'''
 def phone_number(string):
     number_hyphen = ['0','1','2','3','4','5','6','7','8','9','-','(',')']
     number_10 = ['0','1','2','3','4','5','6','7','8','9']
@@ -37,6 +37,7 @@ def phone_number(string):
     count_hyphen = 0
     phone_number_count = 12
     answer = 'False'
+    escape = False
     for i in range(len(string)):
         if exist == 1:
             #print(i)
@@ -48,10 +49,11 @@ def phone_number(string):
                     answer = ''
                     for j in range(phone_number_count):
                         answer = answer + string[(i - phone_number_count + 1) + j]
-                    #print('\n発見')
+                    #print('発見')
                     #print(i)
                     print(answer)
-                    break
+                    escape = True
+                    #break
             elif string[i] =='-':
                 count_hyphen = count_hyphen + 1
                 count = count + 1            
@@ -59,16 +61,84 @@ def phone_number(string):
                 count = 0
                 exist = 0
                 count_hyphen = 0
-        
         if exist == 0:
             if string[i] in number_10:
-                
                 exist = 1
                 count = count + 1
+        if escape:
+            
     return answer
+'''
 
-
-
+def phone_number_new(string):
+    number_10 = ['0','1','2','3','4','5','6','7','8','9']
+    exist = 0
+    count = 0
+    count_hyphen = 0
+    phone_number_count = 12
+    answer = 'False'
+    escape = False
+    for i in range(len(string)):
+        if i < 15:
+            continue
+        if string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10 and string[i-4]=='-' and string[i-5] in number_10 and string[i-6] in number_10:
+            if string[i-7] ==')' and string[i-10] =='(':
+                if string[i-9] =='0' and string[i-8] in number_10:
+                    back_number = 10
+                    answer = string[i-back_number]
+                    for k in range(back_number):
+                        answer = answer + string[i-(back_number-1-k)]
+                    if answer.startswith('(00)'):
+                        answer = 'False'
+                    if answer != 'False':
+                        break
+            if string[i-7] == '-' and string[i-8] in number_10 and string[i-9] =='0':
+                back_number = 9
+                answer = string[i-back_number]
+                for k in range(back_number):
+                    answer = answer + string[i-(back_number-1-k)]
+                if answer.startswith('00'):
+                    answer = 'False'
+                if answer != 'False':
+                    break
+            if string[i-7] in number_10 and string[i-8] in number_10:
+                if string[i-9] == ')' and string[i-12] == '(' and string[i-10] in number_10 and string[i-11] == '0':
+                    back_number = 12
+                    answer =string[i-back_number]
+                    for k in range(back_number):
+                        answer = answer + string[i-(back_number-1-k)]
+                    if answer.startswith('(00'):
+                        answer = 'False'
+                    if answer != 'False':
+                        break
+                if string[i-9] == '-' and string[i-10] in number_10 and string[i-11] == '0':
+                    back_number = 11
+                    answer =string[i-back_number]
+                    for k in range(back_number):
+                        answer = answer + string[i-(back_number-1-k)]
+                    if answer.startswith('00'):
+                        answer = 'False'
+                    if answer != 'False':
+                        break
+                if string[i-9] == ')' and string[i-13] == '(' and string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0':
+                    back_number = 13
+                    answer =string[i-back_number]
+                    for k in range(back_number):
+                        answer = answer + string[i-(back_number-1-k)]
+                    if answer.startswith('(00'):
+                        answer = 'False'
+                    if answer != 'False':
+                        break
+                if string[i-9] == '-' and string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0':
+                    back_number = 12
+                    answer =string[i-back_number]
+                    for k in range(back_number):
+                        answer = answer + string[i-(back_number-1-k)]
+                    if answer.startswith('000'):
+                        answer = 'False'
+                    if answer != 'False':
+                        break
+    return answer
 options = webdriver.ChromeOptions()
 
 user_agent = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',\
@@ -436,7 +506,39 @@ for i in range(len(name)):
                 sleep(3)
                 page_text = driver.page_source
                 page_result = 'False'
-                page_result = phone_number(page_text)
+                page_result = phone_number_new(page_text)
+                print(page_text[10])
+                #URLのルートページ
+                ok = True
+                url_change = False
+                if url_text.startswith("http://"):
+                    url_text = url_text.lstrip("http://")
+                    ok = False
+                if url_text.startswith("https://"):
+                    url_text = url_text.lstrip("https://")
+                    ok = True
+                #print(url_text)
+                for url_text_index in range(len(url_text)):
+                    if url_text[url_text_index] =='/':
+                        print("slash ------> True in URL")
+                        url_change = True
+                        break
+                try:
+                    url_text = url_text[:url_text_index]
+                except:
+                    print('URL change error')
+                #print(url_text)
+                if ok:
+                    url_text = 'https://' + url_text
+                else:
+                    url_text = 'http://' + url_text
+                print(url_text)
+                if url_change:
+                    driver.get(url_text)
+                    sleep(3)
+                    page_text = driver.page_source
+                    page_result = 'False'
+                    page_result = phone_number_new(page_text)
                 if page_result == 'False':
                     jj = 0
                     while True:
@@ -449,7 +551,7 @@ for i in range(len(name)):
                             driver.get(company_link_next)
                             sleep(3)
                             page_text = driver.page_source
-                            page_result = phone_number(page_text)
+                            page_result = phone_number_new(page_text)
                             if page_result != 'False':
                                 print('break because phone_number capture!! from URL')
                                 break
