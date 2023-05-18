@@ -28,47 +28,7 @@ def list_check(list, number):
             for i in range(len(compare)-len(list)):
                 list.append("")
     return list
-'''
-def phone_number(string):
-    number_hyphen = ['0','1','2','3','4','5','6','7','8','9','-','(',')']
-    number_10 = ['0','1','2','3','4','5','6','7','8','9']
-    exist = 0
-    count = 0
-    count_hyphen = 0
-    phone_number_count = 12
-    answer = 'False'
-    escape = False
-    for i in range(len(string)):
-        if exist == 1:
-            #print(i)
-            if string[i] in number_10:
-                
-                count = count + 1
-                if count == phone_number_count and count_hyphen == 2:
-                    #print('YES')
-                    answer = ''
-                    for j in range(phone_number_count):
-                        answer = answer + string[(i - phone_number_count + 1) + j]
-                    #print('発見')
-                    #print(i)
-                    print(answer)
-                    escape = True
-                    #break
-            elif string[i] =='-':
-                count_hyphen = count_hyphen + 1
-                count = count + 1            
-            else:
-                count = 0
-                exist = 0
-                count_hyphen = 0
-        if exist == 0:
-            if string[i] in number_10:
-                exist = 1
-                count = count + 1
-        if escape:
-            
-    return answer
-'''
+
 
 def phone_number_new(string,answer):
     number_10 = ['0','1','2','3','4','5','6','7','8','9']
@@ -255,88 +215,9 @@ def phone_number_new(string,answer):
                     else:
                         break
     return answer
-'''
-        if i != len(string)-1:#ハイフン無し電話番号抽出
-            if string[i+1] not in number_10 and string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10 and string[i-4] in number_10 and string[i-5] in number_10 and string[i-6] in number_10 and string[i-7] in number_10 and string[i-8] in number_10 and string[i-9] in number_10:
-                if string[i-10] in number_10 and string[i-11] not in number_10:
-                    digits = 10
-                    answer[0] = string[i-digits]
-                    for k in range(digits):
-                        answer[0] = answer[0] + string[i-(digits-1-k)]
-                    if answer[0].startswith('000'):
-                        answer[0] = ''
-                    else:
-                        break
-                elif string[i-10] not in number_10:
-                    digits = 9
-                    answer[0] = string[i-digits]
-                    for k in range(digits):
-                        answer[0] = answer[0] + string[i-(digits-1-k)]
-                    if answer[0].startswith('000'):
-                        answer[0] = ''
-                    else:
-                        break
-'''
+
         
-'''
-        if string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10 and string[i-4]=='-' and string[i-5] in number_10 and string[i-6] in number_10:
-            if string[i-7] ==')' and string[i-10] =='(':
-                if string[i-9] =='0' and string[i-8] in number_10:
-                    back_number = 10
-                    answer = string[i-back_number]
-                    for k in range(back_number):
-                        answer = answer + string[i-(back_number-1-k)]
-                    if answer.startswith('(00)'):
-                        answer = 'False'
-                    if answer != 'False':
-                        break
-            if string[i-7] == '-' and string[i-8] in number_10 and string[i-9] =='0':
-                back_number = 9
-                answer = string[i-back_number]
-                for k in range(back_number):
-                    answer = answer + string[i-(back_number-1-k)]
-                if answer.startswith('00'):
-                    answer = 'False'
-                if answer != 'False':
-                    break
-            if string[i-7] in number_10 and string[i-8] in number_10:
-                if string[i-9] == ')' and string[i-12] == '(' and string[i-10] in number_10 and string[i-11] == '0':
-                    back_number = 12
-                    answer =string[i-back_number]
-                    for k in range(back_number):
-                        answer = answer + string[i-(back_number-1-k)]
-                    if answer.startswith('(00'):
-                        answer = 'False'
-                    if answer != 'False':
-                        break
-                if string[i-9] == '-' and string[i-10] in number_10 and string[i-11] == '0':
-                    back_number = 11
-                    answer =string[i-back_number]
-                    for k in range(back_number):
-                        answer = answer + string[i-(back_number-1-k)]
-                    if answer.startswith('00'):
-                        answer = 'False'
-                    if answer != 'False':
-                        break
-                if string[i-9] == ')' and string[i-13] == '(' and string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0':
-                    back_number = 13
-                    answer =string[i-back_number]
-                    for k in range(back_number):
-                        answer = answer + string[i-(back_number-1-k)]
-                    if answer.startswith('(00'):
-                        answer = 'False'
-                    if answer != 'False':
-                        break
-                if string[i-9] == '-' and string[i-10] in number_10 and string[i-11] in number_10 and string[i-12] == '0':
-                    back_number = 12
-                    answer =string[i-back_number]
-                    for k in range(back_number):
-                        answer = answer + string[i-(back_number-1-k)]
-                    if answer.startswith('000'):
-                        answer = 'False'
-                    if answer != 'False':
-                        break
-        '''
+
 
 options = webdriver.ChromeOptions()
 
@@ -470,7 +351,7 @@ driver.implicitly_wait(2)
 driver.maximize_window()
 
 #wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-text_company = ['/company/','/about/','/company/outline']
+text_company = ['/company/','/about/','/company/outline','company.php']
 
 for i in range(len(name)):
     if i == 0:
