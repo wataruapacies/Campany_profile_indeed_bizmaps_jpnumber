@@ -147,7 +147,7 @@ def phone_number_new(string,answer):
                         for k in range(digits):
                             answer[0] = answer[0] + string[i-(digits-1-k)]
                         if answer[0].startswith('0120'):
-                            answer.append(answer[0])
+                            answer[1] = answer[0]
                             answer[0] = ''
                             print('free dial')
                             print(answer[1])
@@ -161,7 +161,7 @@ def phone_number_new(string,answer):
                         for k in range(digits):
                             answer[0] = answer[0] + string[i-(digits-1-k)]
                         if answer[0].startswith('(0120)'):
-                            answer.append(answer[0])
+                            answer[1] = answer[0]
                             answer[0] = ''
                             print('free dial')
                             print(answer[1])
@@ -219,7 +219,7 @@ def phone_number_new(string,answer):
                     for k in range(digits):
                         answer[0] = answer[0] + string[i-(digits-1-k)]
                     if answer[0].startswith('(0120)'):
-                        answer.append(answer[0])
+                        answer[1] = answer[0]
                         print('free dial')
                         print(answer[1])
                         answer[0] = ''
