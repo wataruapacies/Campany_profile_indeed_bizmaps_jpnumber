@@ -378,7 +378,7 @@ for i in range(len(name)):
         #sleep(1)
         white = driver.find_element_by_class_name("fa-caret-square-down")
         white.click()
-        sleep(2)
+        sleep(5)
         element = driver.find_element_by_class_name("TopSearchBtn")
         search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
         if search_num.text == "":
