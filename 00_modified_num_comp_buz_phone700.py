@@ -390,6 +390,10 @@ for i in range(len(name)):
             sleep(10)
         search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
         if search_num.text == "":
+            print("not_yet.... wait 20 seconds...")
+            sleep(20)
+        search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+        if search_num.text == "":
             print("not_yet.... wait 25 seconds...")
             sleep(25)
         search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
@@ -425,6 +429,11 @@ for i in range(len(name)):
             if search_num_new_text == "" or search_num_new_text==search_num_text:
                 print("not_yet.... wait 10 seconds...")
                 sleep(10)
+            search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            search_num_new_text = search_num_new.text
+            if search_num_new_text == "" or search_num_new_text==search_num_text:
+                print("not_yet.... wait 20 seconds...")
+                sleep(20)
             search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
             search_num_new_text = search_num_new.text
             if search_num_new_text == "" or search_num_new_text==search_num_text:
