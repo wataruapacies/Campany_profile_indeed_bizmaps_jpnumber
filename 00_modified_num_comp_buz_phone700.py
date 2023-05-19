@@ -354,7 +354,7 @@ driver.maximize_window()
 text_company = ['/company/','/about/','/company/outline','company.php']
 
 for i in range(len(name)):
-    if i == 0:
+    if i<3:
         print(name[i])
         continue
     biz_name_exist = False
@@ -403,7 +403,7 @@ for i in range(len(name)):
             biz_click = False
         if len(search_num_text)>1:
             print("big_data more imformation input!!!!")
-            biz_area = driver.find_element_by_class_name("top_city")
+            biz_area = driver.find_element_by_class_name("top_area")
             biz_area.click()
             sleep(1)
             biz_area_click1 = driver.find_element_by_class_name("modal__item_parent")
@@ -415,25 +415,29 @@ for i in range(len(name)):
             biz_area_click3 = driver.find_element(By.CLASS_NAME,"modal_footer.modal_decide_Btn")
             biz_area_click3.click()
             sleep(2)
-            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
-            if search_num.text == "":
+            search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            search_num_new_text = search_num_new.text
+            if search_num_new_text == "" or search_num_new_text==search_num_text:
                 print("not_yet.... wait 5 seconds...")
                 sleep(5)
-            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
-            if search_num.text == "":
+            search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            search_num_new_text = search_num_new.text
+            if search_num_new_text == "" or search_num_new_text==search_num_text:
                 print("not_yet.... wait 10 seconds...")
                 sleep(10)
-            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
-            if search_num.text == "":
-                print("not_yet.... wait 25 seconds...")
-                sleep(25)
-            search_num = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
-            if search_num.text == "":
+            search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            search_num_new_text = search_num_new.text
+            if search_num_new_text == "" or search_num_new_text==search_num_text:
+                print("not_yet.... wait 45 seconds...")
+                sleep(45)
+            search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            search_num_new_text = search_num_new.text
+            if search_num_new_text == "" or search_num_new_text==search_num_text:
                 print("not_yet.... biz_data impossible!!")
                 biz_click = False
-            search_num_text = search_num.text
-            print(search_num_text)
-            if search_num.text == '0':
+            search_num_new_text = search_num_new.text
+            print(search_num_new_text)
+            if search_num_new_text == '0':
                 print("biZ_data = 0 !! biz_data impossible!! ---------->sorry....")
                 #biz_click = False
                 driver.get('https://biz-maps.com/')
@@ -467,9 +471,10 @@ for i in range(len(name)):
                     biz_click = False
                 search_num_text = search_num.text
                 print(search_num_text)
-        if len(search_num_text)>4:
-            biz_click = False
-            print("big_data more biz_click-->False...")
+                search_num_new = driver.find_element(By.CLASS_NAME,"searchArea__number--num")
+            if len(search_num_new.text)>4:
+                biz_click = False
+                print("big_data more biz_click-->False...")
         
         #最初の情報入力処理終了
             
