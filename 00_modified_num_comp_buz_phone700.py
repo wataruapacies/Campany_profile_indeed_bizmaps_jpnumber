@@ -344,7 +344,7 @@ else:
 
 csv_file_name = box_search_where + '_' + box_search_what + '.csv'
 
-cols = ['indeed_会社名','業種','会社名','郵便番号','住所','URL','電話番号','bizmapsなら1 junumberなら2']
+cols = ['indeed_会社名','業種','会社名','郵便番号','住所','URL','電話番号','フリーダイヤル','bizmapsなら1 junumberなら2']
 df = pandas.DataFrame(index=[], columns=cols)
 driver = webdriver.Chrome(options=options)
 driver.implicitly_wait(2)
