@@ -41,6 +41,13 @@ def phone_number_new(string,answer):
     for i in range(len(string)):
         if i < 15:
             continue
+        elif string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] == '-' and string[i-4] in number_10 and string[i-5] in number_10 and string[i-6] in number_10 and string[i-7] == '-' and string[i-8] == '0' and string[i-9] == '2' and string[i-10] == '1' and string[i-11] == '0':
+            digits = 11
+            answer[1] = string[i-digits]
+            for k in range(digits):
+                answer[1] = answer[1] + string[i-(digits-1-k)]
+            print('free dial')
+            print(answer[1])
         elif string[i] in number_10 and string[i-1] in number_10 and string[i-2] in number_10 and string[i-3] in number_10:#末尾****
             if string[i-4] == '-':#末尾-****
                 if string[i-5] in number_10 and string[i-6] in number_10:#末尾**-****
@@ -232,7 +239,7 @@ options.add_argument('--user-agent=' + user_agent[random.randrange(0, len(user_a
 
 
 
-box_search_what = "IT エンジニア 外国人受入企業"
+box_search_what = "IT エンジニア 外国人"
 box_search_where = "東京都"
 
 # indeedで会社名抽出するなら True しないなら False
