@@ -614,6 +614,7 @@ for i in range(len(name)):
                     while True:
                         try:
                             company_link_next = url_text + text_company[jj]
+                            print(company_link_next)
                             driver.get(company_link_next)
                             sleep(5)
                             page_text = driver.page_source
