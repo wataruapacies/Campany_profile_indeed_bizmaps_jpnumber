@@ -353,16 +353,9 @@ driver.set_page_load_timeout(90)
 driver.maximize_window()
 
 #wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-text_company = ['/company/','/about/','/company/outline','company.php']
+text_company = ['/company/','/about/','/company/outline','/company.php']
 
 for i in range(len(name)):
-    if i % 20 == 0 and i != 0:
-        driver.close()
-        print('chromedriver reboot!!!')
-        driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(2)
-        driver.set_page_load_timeout(90)
-        driver.maximize_window()
     url_exist = False
     phone_exist = False
     biz_click = True
@@ -513,7 +506,6 @@ for i in range(len(name)):
                     try:
                         xpath = "//div/div[3]/div[2]/ul/li[" + str(biz_index+1) + "]/div[1]/table[1]/tbody/tr[2]/td"
                         address = driver.find_element(by=By.XPATH, value=xpath)
-                        print('yeahllllll')
                         print(address.text)
                         if box_search_where in address.text:
                             biz_index_num = biz_index
@@ -721,6 +713,14 @@ for i in range(len(name)):
                         index = phone_company_address_text.find(' ')
                         jp_postcode = phone_company_address_text[:index]
                         phone_company_address_text = phone_company_address_text[index + 1:]
+                    if '\u3000' in jp_postcode:
+                        phone_company_address_text = phone_company_address.text
+                        phone_company_address_text = phone_company_address_text.lstrip('住所：')
+                        index = phone_company_address_text.find('\u3000')
+                        jp_postcode = phone_company_address_text[:index]
+                        phone_company_address_text = phone_company_address_text[index + 1:]
+                    if jp_postcode.startswith('〒'):
+                        jp_postcode = phone_company_address_text.lstrip('〒')
                     print('||||||||||||||||||||||| this data is saved ||||||||||||||||||||||||')
                     print(jp_postcode)
                     print(phone_company_address_text)
@@ -751,8 +751,14 @@ for i in range(len(name)):
         print("dataframe saved................................")
     except:
         print('row--->dataframe_error!!!')
+    driver.close()
+    print('chromedriver reboot!!!')
+    driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(2)
+    driver.set_page_load_timeout(90)
+    driver.maximize_window()
     try:
-        if i % 10 == 0 and i != 0:
+        if i % 5 == 0 and i != 0:
             i_str = str(i)
             csv_file_name_log = box_search_where + '_' + box_search_what + '_' + i_str.zfill(4) + '.csv'
             df.to_csv(csv_file_name_log,index=False,encoding="cp932",errors="ignore")
