@@ -673,9 +673,8 @@ while i < len(name):
                     print('jpnumber_serch go!!!')
                     phone_contents = driver.find_elements_by_class_name("frame-728-orange-l")
                     print(len(phone_contents))
-                    correct_number = 0
+                    correct_number = 3
                     table_exist = 0
-                    #for i in range(max_num):
                     ii = 2
                     while True:
                         if ii > 30:
@@ -763,31 +762,34 @@ while i < len(name):
                         print('jpnumber phone_number input error')
             except:
                 print("jpnumber_error!!")
+        try:
+            row = list_check(row,9)
+            print('How are you ?')
+            print(row)
+            df = df.append(pandas.Series(row, index=df.columns), ignore_index=True)
+            print("dataframe saved................................")
+        except:
+            print('row--->dataframe_error!!!')
+        #driver.close()
+        #print('chromedriver reboot!!!')
+        #driver = webdriver.Chrome(options=options)
+        #driver.implicitly_wait(2)
+        #driver.set_page_load_timeout(90)
+        #driver.maximize_window()
+        try:
+            if i % 5 == 0 and i != 0:
+                i_str = str(i)
+                csv_file_name_log = box_search_where + '_' + box_search_what + '_' + i_str.zfill(4) + '.csv'
+                df.to_csv(csv_file_name_log,index=False,encoding="cp932",errors="ignore")
+        except:
+            print('log_save_error!')
+        print('NEXT')
+        i = i + 1
+
+
     except:
         print('where i dont know error exist???')
-    try:
-        row = list_check(row,9)
-        print('How are you ?')
-        print(row)
-        df = df.append(pandas.Series(row, index=df.columns), ignore_index=True)
-        print("dataframe saved................................")
-    except:
-        print('row--->dataframe_error!!!')
-    #driver.close()
-    #print('chromedriver reboot!!!')
-    #driver = webdriver.Chrome(options=options)
-    #driver.implicitly_wait(2)
-    #driver.set_page_load_timeout(90)
-    #driver.maximize_window()
-    try:
-        if i % 5 == 0 and i != 0:
-            i_str = str(i)
-            csv_file_name_log = box_search_where + '_' + box_search_what + '_' + i_str.zfill(4) + '.csv'
-            df.to_csv(csv_file_name_log,index=False,encoding="cp932",errors="ignore")
-    except:
-        print('log_save_error!')
-    print('NEXT')
-    i = i + 1
+
 df.to_csv(csv_file_name,index=False,encoding="cp932",errors="ignore")
 
 print("fin")
