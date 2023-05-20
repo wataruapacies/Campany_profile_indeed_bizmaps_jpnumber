@@ -21,6 +21,7 @@ def list_check(list, number):
     if len(list) == len(compare):
         print('list matched!')
     else:
+        print('--------------list NOT matched!-------------------')
         if len(list) > len(compare):
             for i in range(len(list)-len(compare)):
                 list = list[:-1]
@@ -344,27 +345,31 @@ else:
 
 csv_file_name = box_search_where + '_' + box_search_what + '.csv'
 
-cols = ['indeed_会社名','業種','会社名','郵便番号','住所','URL','電話番号','フリーダイヤル','bizmapsなら1 junumberなら2']
+cols = ['indeed_会社名','業種','会社名','郵便番号','住所','URL','電話番号','フリーダイヤル','bizmapsで得たURLからの電話番号なら1 junumberからの電話番号なら2']
 df = pandas.DataFrame(index=[], columns=cols)
 driver = webdriver.Chrome(options=options)
 driver.implicitly_wait(2)
+driver.set_page_load_timeout(90)
 driver.maximize_window()
 
 #wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
 text_company = ['/company/','/about/','/company/outline','company.php']
 
 for i in range(len(name)):
-    if i<3:
-        print(name[i])
-        continue
-    biz_name_exist = False
-    biz_address_exist = False
+    if i % 20 == 0 and i != 0:
+        driver.close()
+        print('chromedriver reboot!!!')
+        driver = webdriver.Chrome(options=options)
+        driver.implicitly_wait(2)
+        driver.set_page_load_timeout(90)
+        driver.maximize_window()
     url_exist = False
+    phone_exist = False
     biz_click = True
-    row = []
-    row.append(name[i])
+    row = ['','','','','','','','','']
+    row[0] = name[i]
     indeed = name[i]
-    row.append(box_search_what)
+    row[1] = box_search_what
     sleep(1)
     try:
         driver.get('https://biz-maps.com/')
@@ -520,55 +525,28 @@ for i in range(len(name)):
                 #住所が東京なのをクリック なければ一番上の
                 biz_name = driver.find_element(By.CLASS_NAME,"company__name")
                 print(biz_name.text)
-                row = list_check(row,2)
-                row.append(biz_name.text)
-                biz_name_exist = True
+                row[2] = biz_name.text
             except:
-                row = list_check(row,2)
-                row.append("")
                 print("cant_read_name")
             try:
                 xpath = "//div[1]/div[1]/section[1]/div/div[1]/table/tbody/tr[1]/td"
                 address = driver.find_element(by=By.XPATH, value=xpath)
                 address_list = address.text.splitlines()
                 try:
-                    post_code = address_list[0]
-                    if post_code.startswith('〒'):
-                        post_code = post_code.lstrip('〒 ')
-                        print(post_code)
-                        row = list_check(row,3)
-                        row.append(post_code)
-                    else:
-                        row = list_check(row,3)
-                        print('cant Get postcode')
-                        row.append('')
-                except:
-                    row = list_check(row,3)
-                    row.append("")
-                    print("cant_read_post_code")
-                    biz_exist = False
-                try:
                     if address_list[0].startswith('〒'):
+                        print(address_list[0])
+                        row[3] = address_list[0]
                         print(address_list[1])
-                        row = list_check(row,4)
-                        row.append(address_list[1])
+                        row[4] = address_list[1]
                         biz_address_exist = True
                     else:
                         print('Address Is This ????')
                         print(address_list[0])
-                        row = list_check(row,4)
-                        row.append(address_list[0])
+                        row[4] = (address_list[0])
                 except:
-                    row = list_check(row,4)
-                    row.append("")
                     print("cant_read_address")
             except:
-                row = list_check(row,3)
-                row.append("")
-                row.append("")
                 print("post_code_and_address_cant_read")
-            #sleep(1)
-            
             #URL取得
             try:
                 j =3
@@ -582,8 +560,7 @@ for i in range(len(name)):
                         url = driver.find_element(by=By.XPATH, value=xpath_url)
                         url_text = url.get_attribute('href')
                         print(url_text)
-                        row = list_check(row,5)
-                        row.append(url_text)
+                        row[5] = (url_text)
                         url_exist = True
                         print('break URL capture!!')
                         break
@@ -595,13 +572,8 @@ for i in range(len(name)):
         if url_exist:
             #URL取得できた場合
             try:
-                driver.close()
-                sleep(1)
-                driver = webdriver.Chrome(options=options)
-                driver.implicitly_wait(3)
-                driver.maximize_window()
                 driver.get(url_text)
-                sleep(3)
+                sleep(5)
                 page_text = driver.page_source
                 page_result = ['','']
                 page_result = phone_number_new(page_text,page_result)
@@ -634,20 +606,16 @@ for i in range(len(name)):
                     print(url_text)
                     if url_change:
                         driver.get(url_text)
-                        sleep(3)
+                        sleep(5)
                         page_text = driver.page_source
                         page_result = phone_number_new(page_text,page_result)
                 if page_result[0] == '':
                     jj = 0
                     while True:
                         try:
-                            driver.close()
-                            driver = webdriver.Chrome(options=options)
-                            driver.implicitly_wait(3)
-                            driver.maximize_window()
                             company_link_next = url_text + text_company[jj]
                             driver.get(company_link_next)
-                            sleep(3)
+                            sleep(5)
                             page_text = driver.page_source
                             page_result = phone_number_new(page_text,page_result)
                             if page_result[0] != '':
@@ -658,339 +626,125 @@ for i in range(len(name)):
                         jj = jj + 1
                         if jj == len(text_company):
                             break
-                row = list_check(row,6)
                 if page_result[0] == '':
                     print('phone_numebr non......')
-                row.append(page_result[0])
-                row.append(page_result[1])#フリーダイヤル追加
-                if page_result != '':
-                    print('phone_exist_continue!!')
-                    #------------------------------ここまで
                 else:
-                    #URLから取れなかった場合
-                    row = list_check(row,7)
-                    
-                    if biz_name_exist and biz_address_exist:
-                        #biz検索ヒットあった場合
-                        print('biz_name_nothing!!--------> biz_name---->phone _nothing_from URL')
-                        try:
-                            driver.close()
-                            driver = webdriver.Chrome(options=options)
-                            driver.implicitly_wait(3)
-                            driver.maximize_window()
-                            phone_summary_site = 'https://www.jpnumber.com/'
-                            phone_summary_site = phone_summary_site + 'searchnumber.do?number='
-                            phone_seach_keyword_url = urllib.parse.quote(biz_name.text)
-                            phone_summary_site_url = phone_summary_site + phone_seach_keyword_url
-                            driver.get(phone_summary_site_url)
-                            sleep(2)
-                            phone_contents = driver.find_elements_by_class_name("frame-728-orange-l")
-                            max_num = 15
-                            company_address = address_list[1]
-                            ii = 0
-                            correct_number = 0
-                            remember = 3
-                            match_ratio = 0
-                            #for i in range(max_num):
-                            while True:
-                                try:
-                                    xpath = "//div[" + str(ii) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
-                                    phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                                    print(phone_company_name.text)
-                                    correct_number = correct_number + 1
-                                    xpath = "//div[" + str(ii) + "]/table/tbody/tr/td[1]/div/dt[5]"
-                                    phone_company_address = driver.find_element(by=By.XPATH, value=xpath)
-                                    phone_company_address_text = phone_company_address.text
-                                    phone_company_address_text = phone_company_address_text.lstrip('住所：')
-                                    if phone_company_address_text.startswith('〒'):
-                                        index = phone_company_address_text.find(' ')
-                                        phone_company_address_text = phone_company_address_text[index + 1:]
-                                    #print(phone_company_address_text)
-                                    #下の二行いらんかったなあ
-                                    #phone_company_address_text_head = divide_addess(phone_company_address_text)
-                                    #phone_company_address_text = phone_company_address_text_head[0] + phone_company_address_text_head[1] + phone_company_address_text_head[2]
-                                    print(phone_company_address_text)
-                                    compare = SequenceMatcher(None, company_address, phone_company_address_text)
-                                    if match_ratio < compare.ratio():
-                                        match_ratio = compare.ratio()
-                                        remember = ii
-                                except:
-                                    #print(i)
-                                    pass
-                                ii = ii + 1
-                                if correct_number == len(phone_contents) or ii > 30:
-                                    break
-                            #rememberが一番似ている番号になった．
-                            xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
-                            phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                            print(phone_company_name.text)
-                            try:
-                                row.append(phone_company_name.text)
-                            except:
-                                row.append("")
-                            xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[5]"
-                            phone_company_address = driver.find_element(by=By.XPATH, value=xpath)
-                            phone_company_address_text = phone_company_address.text
-                            phone_company_address_text = phone_company_address_text.lstrip('住所：')
-                            if phone_company_address_text.startswith('〒'):
-                                index = phone_company_address_text.find(' ')
-                                phone_company_address_text = phone_company_address_text[index + 1:]
-                            print(phone_company_address_text)
-                            try:
-                                row.append(phone_company_address_text)
-                            except:
-                                row.append("")
-                            xpath = "//div[" + str(remember) + "]/div/span/a"
-                            phone_company_phone = driver.find_element(by=By.XPATH, value=xpath)
-                            index = phone_company_phone.text.find(' | ')
-                            phone_company_phone_text = phone_company_phone.text[index + 3:]
-                            print(phone_company_phone_text)
-                            try:
-                                row.append(phone_company_phone_text)
-                            except:
-                                row.append("")
-                        except:
-                            print("jpnumber_error!! _nothing_from URL")
-                            
-                            
-                            
-                    #indeed_name
-                    else:
-                        #biz検索ヒット無かった場合
-                        print('biz_name_nothing!!--------> indeed_name---->phone _nothing_from URL')
-                        try:
-                            driver.close()
-                            driver = webdriver.Chrome(options=options)
-                            driver.implicitly_wait(3)
-                            driver.maximize_window()
-                            phone_summary_site = 'https://www.jpnumber.com/'
-                            phone_summary_site = phone_summary_site + 'searchnumber.do?number='
-                            phone_seach_keyword_url = urllib.parse.quote(indeed)
-                            phone_summary_site_url = phone_summary_site + phone_seach_keyword_url
-                            driver.get(phone_summary_site_url)
-                            sleep(2)
-                            phone_contents = driver.find_elements_by_class_name("frame-728-orange-l")
-                            max_num = 15
-                            iii = 0
-                            correct_number = 0
-                            remember = 3
-                            match_ratio = 0
-                            #for i in range(max_num):
-                            while True:
-                                try:
-                                    xpath = "//div[" + str(iii) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
-                                    phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                                    print(phone_company_name.text)
-                                    correct_number = correct_number + 1
-                                    compare = SequenceMatcher(None, indeed, phone_company_name.text)
-                                    if match_ratio < compare.ratio():
-                                        match_ratio = compare.ratio()
-                                        remember = iii
-                                except:
-                                    pass
-                                iii = iii + 1
-                                if correct_number == len(phone_contents) or iii > 30:
-                                    break
-                            #rememberが一番似ている番号になった．
-                            xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
-                            phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                            print(phone_company_name.text)
-                            try:
-                                row.append(phone_company_name.text)
-                            except:
-                                row.append("")
-                            try:
-                                xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[5]"
-                                phone_company_address = driver.find_element(by=By.XPATH, value=xpath)
-                                phone_company_address_text = phone_company_address.text
-                                phone_company_address_text = phone_company_address_text.lstrip('住所：')
-                                if phone_company_address_text.startswith('〒'):
-                                    index = phone_company_address_text.find(' ')
-                                    phone_company_address_text = phone_company_address_text[index + 1:]
-                                print(phone_company_address_text)
-                                row.append(phone_company_address_text)
-                            except:
-                                row.append("")
-                            try:
-                                xpath = "//div[" + str(remember) + "]/div/span/a"
-                                phone_company_phone = driver.find_element(by=By.XPATH, value=xpath)
-                                index = phone_company_phone.text.find(' | ')
-                                phone_company_phone_text = phone_company_phone.text[index + 3:]
-                                print(phone_company_phone_text)
-                                row.append(phone_company_phone_text)
-                            except:
-                                row.append("")
-                        except:
-                            print("jpnumber_error!! _nothing_from URL")
-                            
-                    #ここまで
+                    print('phone_exist_continue!!')
+                    phone_exist = True
+                row[6] = page_result[0]
+                row[7] = page_result[1]#フリーダイヤル追加
+                row[8] = '1'
             except:
-                print('failure!! from URL!!!!')
-                pass
+                print('company_homepage existence error')
+                    #------------------------------ここまで
+        if phone_exist:
+            print('already phone_number exist!! jpnumber dont need!!')
+        #ここからjp_number
         else:
             #URL取得できなかった場合
-            #biz_exist
-            row = list_check(row,6)
-            row.append("")
-            #URLないもん
-            if biz_name_exist and biz_address_exist:
-                #biz検索ヒットあった場合
-                print('biz_name_nothing!!--------> biz_name---->phone')
-                try:
-                    driver.close()
-                    driver = webdriver.Chrome(options=options)
-                    driver.implicitly_wait(3)
-                    driver.maximize_window()
-                    phone_summary_site = 'https://www.jpnumber.com/'
-                    phone_summary_site = phone_summary_site + 'searchnumber.do?number='
-                    phone_seach_keyword_url = urllib.parse.quote(biz_name.text)
-                    phone_summary_site_url = phone_summary_site + phone_seach_keyword_url
-                    driver.get(phone_summary_site_url)
-                    sleep(2)
+            try:
+                phone_summary_site = 'https://www.jpnumber.com/'
+                phone_summary_site = phone_summary_site + 'searchnumber.do?number='
+                phone_seach_keyword_url = urllib.parse.quote(name[i])
+                phone_summary_site_url = phone_summary_site + phone_seach_keyword_url
+                driver.get(phone_summary_site_url)
+                sleep(2)
+                jpnumber_hit = driver.find_element_by_class_name("number-text15")
+                jpnumber_hit_text = jpnumber_hit.text
+                if jpnumber_hit_text == '0':
+                    jp_search = False
+                    print('jpnumber_search dont go...')
+                else:
+                    jp_search = True
+                if jp_search:
+                    print('jpnumber_serch go!!!')
                     phone_contents = driver.find_elements_by_class_name("frame-728-orange-l")
-                    max_num = 15
-                    company_address = address_list[1]
-                    ii = 0
+                    print(len(phone_contents))
                     correct_number = 0
-                    remember = 3
-                    match_ratio = 0
+                    table_exist = 0
                     #for i in range(max_num):
+                    ii = 2
                     while True:
+                        if ii > 30:
+                            print('jpnumber loop too much break!')
+                            break
                         try:
                             xpath = "//div[" + str(ii) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
                             phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                            print(phone_company_name.text)
-                            correct_number = correct_number + 1
+                            phone_company_name_text = phone_company_name.text.replace('\u3000',' ')
+                            print(phone_company_name_text)
                             xpath = "//div[" + str(ii) + "]/table/tbody/tr/td[1]/div/dt[5]"
                             phone_company_address = driver.find_element(by=By.XPATH, value=xpath)
                             phone_company_address_text = phone_company_address.text
                             phone_company_address_text = phone_company_address_text.lstrip('住所：')
+                            jp_postcode = ''
                             if phone_company_address_text.startswith('〒'):
+                                jp_postcode = phone_company_address_text.lstrip('〒')
                                 index = phone_company_address_text.find(' ')
+                                jp_postcode = phone_company_address_text[:index]
                                 phone_company_address_text = phone_company_address_text[index + 1:]
-                            #print(phone_company_address_text)
-                            #下の二行いらんかったなあ
-                            #phone_company_address_text_head = divide_addess(phone_company_address_text)
-                            #phone_company_address_text = phone_company_address_text_head[0] + phone_company_address_text_head[1] + phone_company_address_text_head[2]
+                            print(jp_postcode)
                             print(phone_company_address_text)
-                            compare = SequenceMatcher(None, company_address, phone_company_address_text)
-                            if match_ratio < compare.ratio():
-                                match_ratio = compare.ratio()
-                                remember = ii
+                            if box_search_where in phone_company_address_text:
+                                print('target_address exist!! break!!')
+                                print(phone_company_name)
+                                print(phone_company_address_text)
+                                correct_number = ii
+                                break
+                            table_exist = table_exist + 1
+                            ii = ii + 1
+                            if table_exist == len(phone_contents):
+                                print('all checked.... break')
                         except:
-                            #print(i)
-                            pass
-                        ii = ii + 1
-                        if correct_number == len(phone_contents) or ii > 30:
-                            break
-                    #rememberが一番似ている番号になった．
-                    xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
+                            print(ii)
+                            print('jpnumber_loop error....?????')
+                            ii = ii + 1
+                    xpath = "//div[" + str(correct_number) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
                     phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
                     print(phone_company_name.text)
+                    for k in range(len(row)):
+                        if k < 2:
+                            continue
+                        row[k] = ''
                     try:
-                        row.append(phone_company_name.text)
+                        row[2] = phone_company_name.text
                     except:
-                        row.append("")
-                    xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[5]"
+                        print('jpnumber company_name input error')
+                    xpath = "//div[" + str(correct_number) + "]/table/tbody/tr/td[1]/div/dt[5]"
                     phone_company_address = driver.find_element(by=By.XPATH, value=xpath)
                     phone_company_address_text = phone_company_address.text
                     phone_company_address_text = phone_company_address_text.lstrip('住所：')
+                    jp_postcode = ''
                     if phone_company_address_text.startswith('〒'):
+                        jp_postcode = phone_company_address_text.lstrip('〒')
                         index = phone_company_address_text.find(' ')
+                        jp_postcode = phone_company_address_text[:index]
                         phone_company_address_text = phone_company_address_text[index + 1:]
+                    print('||||||||||||||||||||||| this data is saved ||||||||||||||||||||||||')
+                    print(jp_postcode)
                     print(phone_company_address_text)
                     try:
-                        row.append(phone_company_address_text)
+                        row[3] = jp_postcode
+                        row[4] = phone_company_address_text
                     except:
-                        row.append("")
-                    xpath = "//div[" + str(remember) + "]/div/span/a"
+                        print('jpnumber address and postcode input error')
+                    xpath = "//div[" + str(correct_number) + "]/div/span/a"
                     phone_company_phone = driver.find_element(by=By.XPATH, value=xpath)
                     index = phone_company_phone.text.find(' | ')
                     phone_company_phone_text = phone_company_phone.text[index + 3:]
                     print(phone_company_phone_text)
                     try:
-                        row.append(phone_company_phone_text)
+                        row[6] = phone_company_phone_text
+                        row[8] = '2'
                     except:
-                        row.append("")
-                except:
-                    print("jpnumber_error!!")
-                    
-                    
-                    
-            #indeed_name
-            else:
-                #biz検索ヒット無かった場合
-                print('biz_name_nothing!!--------> indeed_name---->phone')
-                try:
-                    driver.close()
-                    driver = webdriver.Chrome(options=options)
-                    driver.implicitly_wait(3)
-                    driver.maximize_window()
-                    phone_summary_site = 'https://www.jpnumber.com/'
-                    phone_summary_site = phone_summary_site + 'searchnumber.do?number='
-                    phone_seach_keyword_url = urllib.parse.quote(indeed)
-                    phone_summary_site_url = phone_summary_site + phone_seach_keyword_url
-                    driver.get(phone_summary_site_url)
-                    sleep(2)
-                    phone_contents = driver.find_elements_by_class_name("frame-728-orange-l")
-                    max_num = 15
-                    iii = 0
-                    correct_number = 0
-                    remember = 3
-                    match_ratio = 0
-                    #for i in range(max_num):
-                    while True:
-                        try:
-                            xpath = "//div[" + str(iii) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
-                            phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                            print(phone_company_name.text)
-                            correct_number = correct_number + 1
-                            compare = SequenceMatcher(None, indeed, phone_company_name.text)
-                            if match_ratio < compare.ratio():
-                                match_ratio = compare.ratio()
-                                remember = iii
-                        except:
-                            pass
-                        iii = iii + 1
-                        if correct_number == len(phone_contents) or iii > 30:
-                            break
-                    #rememberが一番似ている番号になった．
-                    xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[2]/strong/a"
-                    phone_company_name = driver.find_element(by=By.XPATH, value=xpath)
-                    print(phone_company_name.text)
-                    try:
-                        row.append(phone_company_name.text)
-                    except:
-                        row.append("")
-                    try:
-                        xpath = "//div[" + str(remember) + "]/table/tbody/tr/td[1]/div/dt[5]"
-                        phone_company_address = driver.find_element(by=By.XPATH, value=xpath)
-                        phone_company_address_text = phone_company_address.text
-                        phone_company_address_text = phone_company_address_text.lstrip('住所：')
-                        if phone_company_address_text.startswith('〒'):
-                            index = phone_company_address_text.find(' ')
-                            phone_company_address_text = phone_company_address_text[index + 1:]
-                        print(phone_company_address_text)
-                        row.append(phone_company_address_text)
-                    except:
-                        row.append("")
-                    try:
-                        xpath = "//div[" + str(remember) + "]/div/span/a"
-                        phone_company_phone = driver.find_element(by=By.XPATH, value=xpath)
-                        index = phone_company_phone.text.find(' | ')
-                        phone_company_phone_text = phone_company_phone.text[index + 3:]
-                        print(phone_company_phone_text)
-                        row.append(phone_company_phone_text)
-                    except:
-                        row.append("")
-                except:
-                    print("jpnumber_error!!")
+                        print('jpnumber phone_number input error')
+            except:
+                print("jpnumber_error!!")
     except:
         print('where i dont know error exist???')
-    
-    #row追加処理
     try:
-        row = list_check(row,10)
+        row = list_check(row,9)
+        print('How are you ?')
         print(row)
         df = df.append(pandas.Series(row, index=df.columns), ignore_index=True)
         print("dataframe saved................................")
