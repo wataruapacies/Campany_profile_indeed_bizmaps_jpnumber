@@ -526,6 +526,10 @@ for i in range(len(name)):
                 address_list = address.text.splitlines()
                 try:
                     if address_list[0].startswith('〒'):
+                        try:
+                            address_list[0] = address_list[0].lstrip('〒 ')
+                        except:
+                            print('top post_code cant delete....')
                         print(address_list[0])
                         row[3] = address_list[0]
                         print(address_list[1])
