@@ -232,7 +232,7 @@ options.add_argument('--user-agent=' + user_agent[random.randrange(0, len(user_a
 
 
 
-box_search_what = "IT エンジニア 外国人受入企業"
+box_search_what = "IT エンジニア 外国人"
 box_search_where = "東京都"
 
 # indeedで会社名抽出するなら True しないなら False
@@ -254,7 +254,7 @@ if indeed_judge:
     name_num = 1
     page_num = 1
     OK = 0
-    while page_num < 50:
+    while page_num < 101:
         sleep(5)
         driver.maximize_window()
         sleep(2)
@@ -353,9 +353,9 @@ driver.set_page_load_timeout(90)
 driver.maximize_window()
 
 #wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-text_company = ['/company/','/about/','/company/outline','/company.php','/company-profile']
-i = 0
-while i < len(name):
+text_company = ['/company/','/about/','/company/outline','/company.php']
+
+for i in range(len(name)):
     url_exist = False
     phone_exist = False
     biz_click = True
@@ -520,15 +520,6 @@ while i < len(name):
                 row[2] = biz_name.text
             except:
                 print("cant_read_name")
-                print('return retry')
-                print(i)
-                driver.close()
-                print('chromedriver reboot!!!')
-                driver = webdriver.Chrome(options=options)
-                driver.implicitly_wait(2)
-                driver.set_page_load_timeout(90)
-                driver.maximize_window()
-                continue
             try:
                 xpath = "//div[1]/div[1]/section[1]/div/div[1]/table/tbody/tr[1]/td"
                 address = driver.find_element(by=By.XPATH, value=xpath)
@@ -701,8 +692,6 @@ while i < len(name):
                             ii = ii + 1
                             if table_exist == len(phone_contents):
                                 print('all checked.... break')
-                                ii = ii - 1
-                                break
                         except:
                             print(ii)
                             print('jpnumber_loop error....?????')
@@ -766,12 +755,12 @@ while i < len(name):
         print("dataframe saved................................")
     except:
         print('row--->dataframe_error!!!')
-    #driver.close()
-    #print('chromedriver reboot!!!')
-    #driver = webdriver.Chrome(options=options)
-    #driver.implicitly_wait(2)
-    #driver.set_page_load_timeout(90)
-    #driver.maximize_window()
+    driver.close()
+    print('chromedriver reboot!!!')
+    driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(2)
+    driver.set_page_load_timeout(90)
+    driver.maximize_window()
     try:
         if i % 5 == 0 and i != 0:
             i_str = str(i)
@@ -779,8 +768,6 @@ while i < len(name):
             df.to_csv(csv_file_name_log,index=False,encoding="cp932",errors="ignore")
     except:
         print('log_save_error!')
-    print('NEXT')
-    i = i + 1
 df.to_csv(csv_file_name,index=False,encoding="cp932",errors="ignore")
 
 print("fin")
