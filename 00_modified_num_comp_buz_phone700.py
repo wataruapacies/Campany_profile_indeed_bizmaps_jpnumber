@@ -756,7 +756,10 @@ while i < len(name):
                     phone_company_phone_text = phone_company_phone.text[index + 3:]
                     print(phone_company_phone_text)
                     try:
-                        row[6] = phone_company_phone_text
+                        if phone_company_phone_text.startswith('0120'):
+                            row[7] = phone_company_phone_text
+                        else:
+                            row[6] = phone_company_phone_text
                         row[8] = '2'
                     except:
                         print('jpnumber phone_number input error')
