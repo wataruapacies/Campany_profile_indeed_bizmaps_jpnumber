@@ -360,7 +360,7 @@ driver.set_page_load_timeout(90)
 driver.maximize_window()
 
 #wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-text_company = ['/company/','/about/','/company/outline','/company.php','/company-profile']
+text_company = ['/company/','/about/','/company/outline','/company.php','/company-profile','/access','/access.html','/company.html','/aboutus','/about-us','/company/about','/company/profile','/company/information']
 i = 0
 while i < len(name):
     url_exist = False
@@ -628,7 +628,10 @@ while i < len(name):
                             company_link_next = url_text + text_company[jj]
                             print(company_link_next)
                             driver.get(company_link_next)
-                            sleep(5)
+                            if jj < 3:
+                                sleep(4)
+                            else:
+                                sleep(2)
                             page_text = driver.page_source
                             page_result = phone_number_new(page_text,page_result)
                             if page_result[0] != '':
@@ -792,6 +795,13 @@ while i < len(name):
 
     except:
         print('where i dont know error exist???')
+        driver.close()
+        print('chromedriver reboot!!!')
+        sleep(5)
+        driver = webdriver.Chrome(options=options)
+        driver.implicitly_wait(2)
+        driver.set_page_load_timeout(90)
+        driver.maximize_window()
 
 df.to_csv(csv_file_name,index=False,encoding="cp932",errors="ignore")
 
