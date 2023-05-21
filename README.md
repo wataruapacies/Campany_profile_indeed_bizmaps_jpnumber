@@ -1,6 +1,6 @@
 <B>電話番号取得業務</B><br>
 <br>
-indeed（https://jp.indeed.com/）で求人を掲載している企業の電話番号のリスト取得案件
+indeed（https://jp.indeed.com/ ）で求人を掲載している企業の電話番号のリスト取得案件
 <br>
 <br>
 流れとして，<br>
