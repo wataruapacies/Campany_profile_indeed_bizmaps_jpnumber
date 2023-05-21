@@ -238,11 +238,15 @@ options.add_argument('--user-agent=' + user_agent[random.randrange(0, len(user_a
 #options.add_argument('--headless')
 
 
-
+#indeedでの検索条件入力
 box_search_what = "IT エンジニア 外国人"
 box_search_where = "東京都"
+#indeedヒットしたうちで何ページまで企業名取得するか
+indeed_page_finish_num = 50
+
 
 # indeedで会社名抽出するなら True しないなら False
+# proxy_get.pyでresult.csv出力済ならFalse
 indeed_judge = False
 
 box_search_what_url = urllib.parse.quote(box_search_what)
@@ -255,13 +259,11 @@ if indeed_judge:
 
     driver.get(first_url)
 
-
-
     name = []
     name_num = 1
     page_num = 1
     OK = 0
-    while page_num < 50:
+    while page_num < indeed_page_finish_num:
         sleep(5)
         driver.maximize_window()
         sleep(2)

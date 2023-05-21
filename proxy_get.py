@@ -21,7 +21,6 @@ user_agent = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHT
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.3112.113 Safari/537.36'\
     ] 
 options.add_argument('--user-agent=' + user_agent[random.randrange(0, len(user_agent), 1)])
-#options.add_argument('--headless')
 
 proxy_ip = "139.162.78.109"
 proxy_port = "3128"
@@ -39,14 +38,6 @@ webdriver.DesiredCapabilities.CHROME['proxy'] = {
 webdriver.DesiredCapabilities.CHROME['acceptSslCerts']=True
 
 
-
-
-
-
-#options.add_argument(f"--proxy-server=https://{proxy_ip}:{proxy_port}")
-
-
-#options.add_argument(f"--proxy-server=http://{proxy_ip}:{proxy_port}")
 box_search_what = "IT エンジニア 外国人受入企業"
 box_search_where = "東京都"
 
@@ -55,16 +46,6 @@ indeed_judge = True
 
 box_search_what_url = urllib.parse.quote(box_search_what)
 box_search_where_url = urllib.parse.quote(box_search_where)
-'''
-if indeed_judge:
-    driver = webdriver.Chrome(options=options)
-    driver.set_page_load_timeout(60)
-    wait = WebDriverWait(driver, 20)
-    first_url = 'https://jp.indeed.com/'#'https://www.gnavi.co.jp/'
-    #first_url = 'https://jp.indeed.com/jobs?q=' + box_search_what_url + '&l=' + box_search_where_url
-
-    driver.get(first_url)
-'''
 
 if indeed_judge:
     driver = webdriver.Chrome(options=options)
